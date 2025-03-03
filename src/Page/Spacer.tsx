@@ -8,7 +8,7 @@ type SpacerProps = {
 export const Spacer = ({ onClick, showHint }: SpacerProps) => {
   return (
     <div className={styles.spacer} onClick={onClick}>
-      {showHint && "Click to add first block"}
+      {showHint && "Click to add first paragraph"}
     </div>
   );
 };
