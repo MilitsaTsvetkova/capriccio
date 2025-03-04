@@ -5,6 +5,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { useAppState } from "../state/AppStateContext";
 import { NodeData } from "../utils/types";
 import styles from "./Node.module.css";
 
@@ -13,9 +14,6 @@ type BasicNodeProps = {
   updateFocusedIndex: (index: number) => void;
   isFocused: boolean;
   index: number;
-  addNode: (node: NodeData, index: number) => void;
-  removeNodeByIndex: (index: number) => void;
-  changeNodeValue: (index: number, value: string) => void;
 };
 
 export const BasicNode = ({
@@ -23,11 +21,10 @@ export const BasicNode = ({
   updateFocusedIndex,
   isFocused,
   index,
-  addNode,
-  removeNodeByIndex,
-  changeNodeValue,
 }: BasicNodeProps) => {
   const nodeRef = useRef<HTMLDivElement>(null);
+
+  const { addNode, removeNodeByIndex, changeNodeValue } = useAppState();
 
   useEffect(() => {
     if (isFocused && nodeRef.current) {
