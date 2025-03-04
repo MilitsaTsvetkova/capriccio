@@ -3,7 +3,7 @@ import { NodeData, NodeType, Page } from "../utils/types";
 export const usePageState = (initialState: Page) => {
   const [page, setPage] = useImmer<Page>(initialState);
 
-  const addNote = (node: NodeData, index: number) => {
+  const addNode = (node: NodeData, index: number) => {
     setPage((draft) => {
       draft.nodes.splice(index, 0, node);
     });
@@ -49,7 +49,7 @@ export const usePageState = (initialState: Page) => {
     nodes: page.nodes,
     title: page.title,
     cover: page.cover,
-    addNote,
+    addNode,
     removeNodeByIndex,
     changeNodeValue,
     changeNodeType,
