@@ -1,12 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
+import { Auth } from "./auth/Auth";
 import { Page } from "./Page/Page";
 import { AppStateProvider } from "./state/AppStateContext";
 import { createPage } from "./utils/createPage";
-
-const Auth = () => {
-  return <></>;
-};
 
 function App() {
   return (
