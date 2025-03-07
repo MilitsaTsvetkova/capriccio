@@ -4,7 +4,6 @@ import { Auth } from "./auth/Auth";
 import { Private } from "./auth/Private";
 import { Page } from "./Page/Page";
 import { AppStateProvider } from "./state/AppStateContext";
-import { createPage } from "./utils/createPage";
 
 function App() {
   return (
@@ -15,7 +14,7 @@ function App() {
         element={
           <Private
             component={
-              <AppStateProvider initialState={createPage()}>
+              <AppStateProvider>
                 <Page />
               </AppStateProvider>
             }
@@ -27,7 +26,7 @@ function App() {
         element={
           <Private
             component={
-              <AppStateProvider initialState={createPage()}>
+              <AppStateProvider>
                 <Page />
               </AppStateProvider>
             }
