@@ -22,6 +22,7 @@ const supportedNodeTypes: SupportedNodeTypes[] = [
   { name: "Heading 1", value: "heading1" },
   { name: "Heading 2", value: "heading2" },
   { name: "Heading 3", value: "heading3" },
+  { name: "Page", value: "page" },
 ];
 
 export const CommandPanel = ({ nodeText, onSelectItem }: CommandPanelProps) => {
