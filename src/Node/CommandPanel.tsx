@@ -19,6 +19,7 @@ const supportedNodeTypes: SupportedNodeTypes[] = [
   { name: "Image", value: "image" },
   { name: "List", value: "list" },
   { name: "Page", value: "page" },
+  { name: "Image", value: "image" },
   { name: "Heading 1", value: "heading1" },
   { name: "Heading 2", value: "heading2" },
   { name: "Heading 3", value: "heading3" },
