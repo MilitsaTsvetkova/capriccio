@@ -12,7 +12,8 @@ import { Title } from "./Title";
 import { useFocusedNodeIndex } from "./useFocusedNodeIndex";
 
 export const Page = () => {
-  const { nodes, title, setTitle, addNode, reorderNodes } = useAppState();
+  const { nodes, title, setTitle, addNode, reorderNodes, cover, setCover } =
+    useAppState();
   const [focusedNodeIndex, setFocusedNodeIndex] = useFocusedNodeIndex({
     nodes,
   });
@@ -26,7 +27,7 @@ export const Page = () => {
 
   return (
     <>
-      <Cover />
+      <Cover filePath={cover} changeCover={setCover} />
       <div>
         <Title title={title} onChangeTitle={setTitle} addNode={addNode} />
         <DndContext onDragEnd={handleDragEvent}>

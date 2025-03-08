@@ -1,22 +1,36 @@
 import { useRef } from "react";
+import { FileImage } from "../components/FileImage";
+import { uploadImage } from "../utils/uploadImage";
 import styles from "./Cover.module.css";
 
-export const Cover = () => {
+type CoverProps = {
+  filePath?: string;
+  changeCover: (filePath: string) => void;
+};
+
+export const Cover = ({ filePath, changeCover }: CoverProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onChangeCoverImage = () => {
     inputRef.current?.click();
   };
 
-  const onCoverImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const target = e.target;
     const file = target?.files?.[0];
-    console.log(file);
+    const result = await uploadImage(file);
+    if (result?.filePath) {
+      changeCover(result.filePath);
+    }
   };
 
   return (
     <div className={styles.cover}>
-      <img src="./cover.jpg" alt="cover" className={styles.image} />
+      {filePath ? (
+        <FileImage filePath={filePath} className={styles.image} />
+      ) : (
+        <img src="./cover.jpg" alt="cover" className={styles.image} />
+      )}
       <button className={styles.button} onClick={onChangeCoverImage}>
         Change Cover
       </button>
