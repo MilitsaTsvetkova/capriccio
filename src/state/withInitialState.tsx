@@ -1,4 +1,4 @@
-import { ComponentType, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMatch } from "react-router-dom";
 import { Loader } from "../components/Loader";
 import { supabase } from "../supabaseClient";
@@ -10,52 +10,70 @@ type InjectedProps = {
   initialState: Page;
 };
 
-type PropsWithoutInject<TBaseProps> = Omit<TBaseProps, keyof InjectedProps>;
+type PropsWithoutInjected<TBaseProps> = Omit<TBaseProps, keyof InjectedProps>;
 
-export const withInitialState = <P extends {}>(
-  Component: ComponentType<PropsWithoutInject<P> & InjectedProps>
-) => {
-  return (props: PropsWithoutInject<P>) => {
+export function withInitialState<TProps>(
+  WrappedComponent: React.ComponentType<
+    PropsWithoutInjected<TProps> & InjectedProps
+  >
+) {
+  return (props: PropsWithoutInjected<TProps>) => {
     const match = useMatch("/:slug");
     const pageSlug = match ? match.params.slug : "start";
-    const [initialState, setInitialState] = useState<Page | null>(null);
+
+    const [initialState, setInitialState] = useState<Page | null>();
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | undefined>();
+    const inProgress = useRef(false);
 
     useEffect(() => {
+      if (inProgress.current) {
+        return;
+      }
       setIsLoading(true);
+      inProgress.current = true;
       const fetchInitialState = async () => {
         try {
-          const {
-            data: { user },
-          } = await supabase.auth.getUser();
+          const { data: userData } = await supabase.auth.getUser();
+          const user = userData.user;
           if (!user) {
             throw new Error("User is not logged in");
           }
           const { data } = await supabase
             .from("pages")
             .select("title, id, cover, nodes, slug")
-            .match({ slug: pageSlug, created_by: user.id })
-            .single();
+            .match({ slug: pageSlug, created_by: user.id });
 
-          if (!data && pageSlug === "start") {
-            const result = await supabase
+          if (data?.[0]) {
+            setInitialState(data?.[0]);
+            inProgress.current = false;
+            setIsLoading(false);
+            return;
+          }
+
+          if (pageSlug === "start") {
+            await supabase.from("pages").insert({
+              ...startPageScaffold,
+              slug: "start",
+              created_by: user.id,
+            });
+
+            const { data } = await supabase
               .from("pages")
-              .insert([
-                { ...startPageScaffold, slug: "start", created_by: user.id },
-              ])
-              .single();
-            setInitialState(result.data);
+              .select("title, id, cover, nodes, slug")
+              .match({ slug: "start", created_by: user.id });
+
+            setInitialState(data?.[0]);
           } else {
-            setInitialState(data);
+            setInitialState(data?.[0]);
           }
-        } catch (err) {
-          if (err instanceof Error) {
-            setError(err);
+        } catch (e) {
+          if (e instanceof Error) {
+            setError(e);
           }
-        } finally {
-          setIsLoading(false);
         }
+        inProgress.current = false;
+        setIsLoading(false);
       };
       fetchInitialState();
     }, [pageSlug]);
@@ -69,21 +87,13 @@ export const withInitialState = <P extends {}>(
     }
 
     if (error) {
-      return (
-        <div className={styles.centeredFlex}>
-          <p>{error.message}</p>
-        </div>
-      );
+      return <div>{error.message}</div>;
     }
 
     if (!initialState) {
-      return (
-        <div className={styles.centeredFlex}>
-          <p>Page not found</p>
-        </div>
-      );
+      return <div className={styles.centeredFlex}>Page not found</div>;
     }
 
-    return <Component {...props} initialState={initialState} />;
+    return <WrappedComponent {...props} initialState={initialState} />;
   };
-};
+}
